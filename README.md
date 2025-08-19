@@ -2,13 +2,13 @@
 Este repositório contém três microsserviços em Go (Pedido, Pagamento, Envio) que utilizam gRPC e Protocol Buffers.
 
 ### Serviços
-- **Pedido**: Gerencia a criação e o fluxo de pedidos.
+- **Pedido (order)**: Gerencia a criação e o fluxo de pedidos.
 
-- **Pagamento**: Processa pagamentos e aplica regras de negócio.
+- **Pagamento (payment)**: Processa pagamentos e aplica regras de negócio.
 
-- **#Envio**: Gerencia o envio de pedidos e cálculo de dias de entrega
+- **Envio (shipping)**: Gerencia o envio de pedidos e cálculo de dias de entrega
 
-- **db**: Ao inicializar a imagem Mysql, o volume "init.sql" será executado, criando a base de dados e inserindo itens no "inventory" conforme instruções da parte final.
+- **db (mysql)**: Ao inicializar a imagem Mysql, o volume "init.sql" será executado, criando a base de dados e inserindo itens no "inventory" conforme instruções da parte final.
 
 # Executando com Docker
 Construa e inicie todos os serviços:
@@ -21,11 +21,11 @@ Cada serviço estará disponível em sua respectiva porta:
 
     database: 3306
 
-    Pedido: localhost:3010
+    order: localhost:3010
 
-    Pagamento: 3001
+    Payment: 3001
 
-    Envio: 50051
+    shipping: 50051
 
 
 # Exemplos de requisições (Requisições concluídas com sucesso retornam "OrderId" e "deliveryDays")
