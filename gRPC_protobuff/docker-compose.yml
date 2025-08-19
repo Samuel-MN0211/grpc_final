@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: order
+    ports:
+      - "3007:3306"
+    volumes:
+      - ./microservices/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  order:
+    build:
+      context: .
+      dockerfile: ./microservices/order/Dockerfile
+    ports:
+      - "3010:3000"
+    environment:
+      # Corrigido para a porta interna do MySQL
+      DATA_SOURCE_URL: root:mysql@tcp(db:3306)/order
+      APPLICATION_PORT: 3000
+      ENV: development
+      PAYMENT_SERVICE_URL: payment:3001
+      SHIPPING_SERVICE_URL: shipping:50051
+    depends_on:
+      db:
+        # Adicionado dependência do banco de dados
+        condition: service_healthy # Espera o healthcheck do 'db' passar
+      payment:
+        condition: service_started
+      shipping:
+        condition: service_started
+    restart: on-failure # Reinicia o serviço se ele falhar
+
+  payment:
+    build:
+      context: .
+      dockerfile: ./microservices/payment/Dockerfile
+    ports:
+      - "3011:3001"
+    environment:
+      DB_DRIVER: mysql
+      # Corrigido para a porta interna do MySQL
+      DATA_SOURCE_URL: root:mysql@tcp(db:3306)/payment
+      APPLICATION_PORT: 3001
+      ENV: development
+    depends_on:
+      db:
+        # Adicionado dependência do banco de dados
+        condition: service_healthy # Espera o healthcheck do 'db' passar
+    restart: on-failure # Reinicia o serviço se ele falhar
+
+  shipping:
+    build:
+      context: .
+      dockerfile: ./microservices/shipping/Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      # Corrigido para a porta interna do MySQL
+      DATA_SOURCE_URL: root:mysql@tcp(db:3306)/shipping
+      APPLICATION_PORT: 50051
+      ENV: development
+    depends_on:
+      db:
+        # Adicionado dependência do banco de dados
+        condition: service_healthy # Espera o healthcheck do 'db' passar
+    restart: on-failure # Reinicia o serviço se ele falhar
