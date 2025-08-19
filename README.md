@@ -1,4 +1,6 @@
-# Prática de Microsserviços com gRPC
+# Prática de Microsserviços com gRPC - IMPLEMENTAÇÃO DOCKER
+# A prática em implementação kubernetes se encontra em: https://github.com/Samuel-MN0211/grpc_final_k8s com documentação para execução em kubernetes
+
 Este repositório contém três microsserviços em Go (Pedido, Pagamento, Envio) que utilizam gRPC e Protocol Buffers.
 
 ### Serviços
